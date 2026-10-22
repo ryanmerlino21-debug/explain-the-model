@@ -43,3 +43,12 @@ A log of what I asked, in order, and what came of each request.
 
 14. **Final check.** "make sure everything is how the assignment wants it", then "make sure prompts.md is updated and github is correct"
     - Result: the agent re-checked the live app against every assignment checklist (27 checks passed) and updated this file.
+
+15. **Streamlit version.** "make this app into a streamlit app" (with a screenshot of my Streamlit Cloud apps page)
+    - Result: `streamlit_app.py` was rewritten with the same three explainers (altair charts), tested locally in a browser, and put on a `streamlit` branch first.
+
+16. **Deploying.** "what do i click", "do i submit a link to the main branch or streamlit branch?", and "how do i finish the deploy..."
+    - Result: the agent explained how to deploy from the repo's `streamlit` branch on share.streamlit.io, and that the app must be set to public.
+
+17. **Finish it.** "it comes up when i open it in an incognito window. i dont need to sign in on it" / "yes do the rest its public"
+    - Result: the live app at https://explain-the-model.streamlit.app/ passed the browser tests (21 page checks and 20 interaction checks). `streamlit` was merged into `main` and the README now leads with the Streamlit link, with the GitHub Pages version as a second link.
