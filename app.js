@@ -12,7 +12,11 @@ const ORDER = ["linear", "forest", "boosting"];
 const state = { key: "glucose", person: "P1", values: null, sel: null, nTrees: 10, round: 1, stop: null, lr02: false };
 
 const $ = (id) => document.getElementById(id);
-const fmt = (v, d = 1) => Number(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+// toFixed rounds like the supplied numbers (check.md); toLocaleString would round 1982.55 up to 1,982.6.
+const fmt = (v, d = 1) => {
+  const [i, f] = Number(v).toFixed(d).split(".");
+  return i.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (f ? "." + f : "");
+};
 const signed = (v, d = 1) => (v >= 0 ? "+" : "−") + fmt(Math.abs(v), d);
 const short = (label) => label.replace(/\s*\(.*?\)/g, "").trim();
 const featureOf = (b, name) => b.features.find((f) => f.name === name);
