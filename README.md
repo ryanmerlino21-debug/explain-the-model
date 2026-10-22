@@ -2,6 +2,8 @@
 
 **App:** <https://ryanmerlino21-debug.github.io/explain-the-model/>
 
+**Streamlit version (this branch):** `uv run --with streamlit,pandas,numpy,altair streamlit run streamlit_app.py`; deploy `streamlit_app.py` at <https://share.streamlit.io>. Section pages: `/` (Push & Pull), `/forest`, `/boosting`.
+
 | Section | Direct link | My viewer should walk away knowing… |
 |---|---|---|
 | Push & Pull (linear regression) | <https://ryanmerlino21-debug.github.io/explain-the-model/#linear> | A prediction is a starting point plus one signed push per feature; a coefficient is the model's rule, a push is one person's share of it. |
