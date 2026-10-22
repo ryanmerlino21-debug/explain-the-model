@@ -292,10 +292,10 @@ function renderLinear(b, person) {
     if (it.kind === "num") {
       const f = it.f, c = lin.coefficients[f.name], avg = lin.reference[f.name], v = state.values[f.name], d = v - avg;
       body = `<div class="stats">
-        <div class="stat"><small>1. Coefficient: the model's rule, the same for every person</small><strong>${coefFmt(c)} ${u}</strong><small>per 1 ${f.units} of ${it.label.toLowerCase()}, other features held fixed</small></div>
+        <div class="stat"><small>1. Coefficient: the model's rule, the same for every person</small><strong>${coefFmt(c)} ${u}</strong><small>per 1-unit increase in ${it.label.toLowerCase()} (unit: ${f.units}), other features held fixed</small></div>
         <div class="stat"><small>2. This person's gap from the training average</small><strong>${signed(d, 2)} ${f.units}</strong><small>${valFmt(v)} − ${fmt(avg, 2)} (average)</small></div>
         <div class="stat hl"><small>3. This person's push = coefficient × gap</small><strong class="${it.push >= 0 ? "up" : "down"}">${signed(it.push, 2)} ${u}</strong><small>${coefFmt(c)} × ${signed(d, 2)} = ${signed(c * d, 2)}</small></div></div>
-        <p>If this person's ${it.label} were exactly average, the push would be 0 even though the coefficient stays ${coefFmt(c)} ${u} per ${f.units}. Edit the value on the left to see it.</p>`;
+        <p>If this person's ${it.label} were exactly average, the push would be 0 even though the coefficient stays ${coefFmt(c)} ${u} per unit. Edit the value on the left to see it.</p>`;
     } else {
       const g = it.g, cur = m10.categoryOf(b, g.name, state.values);
       const lv = g.levels.filter((l) => l.column);
@@ -331,9 +331,9 @@ function renderLinear(b, person) {
   function miss(ex, showObs) {
     if (!showObs) { $("lin-miss").innerHTML = `<div class="callout">You've edited this person, so there is no measured value to compare with. Use "Reset" to return to ${person.label}.</div>`; return; }
     const diff = person.observed - ex.prediction, rmse = lin.rmse.validation;
-    const big = Math.abs(diff) > 2 * rmse;
+    const big = Math.abs(diff) > 1.5 * rmse;
     $("lin-miss").innerHTML = `<div class="${big ? "callout" : "card"}"><b>How close is the line for ${person.label}?</b> Predicted ${fmt(ex.prediction)} ${u}, observed ${fmt(person.observed)} ${u}: a miss of ${signed(diff)} ${u}.
-      On all validation people the line's typical error (RMSE) is ${fmt(rmse)} ${u}.${big ? ` This miss is more than twice that.
+      On all validation people the line's typical error (RMSE) is ${fmt(rmse)} ${u}.${big ? ` This miss is much bigger than that.
       ${b.id === "fev1" || b.name.includes("lung") ? "A straight line has one age coefficient, but lungs grow through childhood and then slowly shrink, so one slope cannot fit both. This is the model, not a bug." : "A straight line has one coefficient per feature, so it cannot bend to follow patterns that rise and then fall. This is the model, not a bug."}` : ""}</div>`;
   }
 
