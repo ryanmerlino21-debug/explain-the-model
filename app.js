@@ -207,7 +207,7 @@ function renderLinear(b, person) {
       </div>
     </div>
     <div class="card" id="lin-explain"></div>
-    <div class="card" id="lin-general"></div>
+    <div class="card"><h3>One person's pushes ≠ which feature matters most overall</h3><p id="lin-gen-sentence"></p><details><summary>See the difference, feature by feature</summary><div id="lin-general"></div></details></div>
     <div id="lin-miss"></div>
     <p class="note">These are associations in a survey sample, not causes: the model does not say that changing one value would change a person's ${b.target_label.toLowerCase()}.</p>`;
 
@@ -315,17 +315,17 @@ function renderLinear(b, person) {
     const gen = numeric.map((f) => ({ f, e: eff[f.name] })).sort((a, c) => Math.abs(c.e) - Math.abs(a.e));
     const maxE = Math.max(...gen.map((g) => Math.abs(g.e))), maxP = Math.max(...list.map((i) => Math.abs(i.push)));
     const topP = list[0], topG = gen[0];
-    $("lin-general").innerHTML = `<h3>One person's pushes ≠ which feature matters most overall</h3>
+    $("lin-general").innerHTML = `
       <p>A push answers: <i>for this person, how far did this feature move the prediction from the starting point?</i> It is large only when the person is far from average on that feature.
         <b>Typical effect per SD</b> answers a different question: <i>across people, how much does the prediction change when this feature differs from average by a typical amount (one standard deviation)?</i></p>
       <table><tr><th>Feature</th><th class="num">Overall: typical effect of 1 SD (${u})</th><th></th><th class="num">This person's push (${u})</th><th></th></tr>
       ${gen.map((g) => { const p = ex.groupedPushes[g.f.name]; return `<tr><td>${short(g.f.label)} <span class="note">(1 SD = ${fmt(b.feature_stats[g.f.name].train_sd, 1)} ${g.f.units})</span></td>
         <td class="num">${signed(g.e)}</td><td style="width:20%"><div class="bars"><div class="fill alt" style="width:${(Math.abs(g.e) / maxE) * 100}%"></div></div></td>
         <td class="num ${p >= 0 ? "up" : "down"}">${signed(p)}</td><td style="width:20%"><div class="bars"><div class="fill" style="width:${(Math.abs(p) / maxP) * 100}%;background:var(--${p >= 0 ? "up" : "down"})"></div></div></td></tr>`; }).join("")}</table>
-      <p class="note">${groups.map((g) => g.label).join(" and ")} are categories, so they have no "1 SD" and are left out of the overall column.</p>
-      <p>${topP.label === topG.f.label.replace(/\s*\(.*?\)/g, "") || topP.key === topG.f.name
+      <p class="note">${groups.map((g) => g.label).join(" and ")} are categories, so they have no "1 SD" and are left out of the overall column.</p>`;
+    $("lin-gen-sentence").innerHTML = `${topP.label === topG.f.label.replace(/\s*\(.*?\)/g, "") || topP.key === topG.f.name
         ? `Here the same feature, <b>${topG.f.name === topP.key ? short(topG.f.label) : topP.label}</b>, has both the largest push for this person and the largest typical effect overall.`
-        : `For this person the largest push comes from <b>${topP.label}</b> (${signed(topP.push)} ${u}), but across people the largest typical effect belongs to <b>${short(topG.f.label)}</b> (${signed(topG.e)} ${u} per SD). Try editing ${short(topG.f.label).toLowerCase()} to see its push grow.`}</p>`;
+        : `For this person the largest push comes from <b>${topP.label}</b> (${signed(topP.push)} ${u}), but across people the largest typical effect belongs to <b>${short(topG.f.label)}</b> (${signed(topG.e)} ${u} per SD). Try editing ${short(topG.f.label).toLowerCase()} to see its push grow.`}`;
   }
 
   function miss(ex, showObs) {
@@ -400,21 +400,20 @@ function renderForest(b, person) {
           Each tree saw only ${fmt(Math.min(...uniq), 0)} to ${fmt(Math.max(...uniq), 0)} different people (on average ${fmt((meanUniq / rf.n_training_rows) * 100, 0)}% of the training people).</li>
         <li><b>At each question a tree may look at only ${rf.features_tried_per_split} of the ${rf.n_features} features,</b> chosen at random for that question.</li>
       </ol>
-      <p><b>What it does:</b> the ${N} trees don't even ask the same first question.</p>
+      <details><summary>See it in the data: the trees' first questions, and trees 1–5 for ${person.label}</summary><p><b>What it does:</b> the ${N} trees don't even ask the same first question.</p>
       <div class="bars" role="group" aria-label="First question of each tree">${roots.map(([f, th]) => `<div class="b"><span>${short(featureOf(b, f).label)}</span><div><div class="fill" style="width:${(th.length / N) * 100}%"></div></div><span>${th.length} trees</span></div>`).join("")}</div>
       <p class="note">Even trees that start with the same feature use different cut-offs: for ${short(featureOf(b, topRoot[0]).label)}, from ${Number(Math.min(...topRoot[1]).toFixed(2))} to ${Number(Math.max(...topRoot[1]).toFixed(2))} ${featureOf(b, topRoot[0]).units}.</p>
       <h3 style="margin-top:12px">Trees 1–5 for ${person.label}</h3>
-      <div class="tree-cards">${P.traced_trees.map(treeCard).join("")}</div>
+      <div class="tree-cards">${P.traced_trees.map(treeCard).join("")}</div></details>
     </div>
 
     <div class="card">
       <h3>Disagreement between trees is not uncertainty</h3>
-      <p>When trees <b>disagree</b>, their guesses are spread out. That describes the trees. It is <b>not a confidence interval or prediction interval</b>: nothing says the real value lies between the lowest and highest guess, or how likely any value is.
-        Compare the spread with how far the forest's average actually was from the observed value:</p>
-      <div class="scroll"><table><tr><th>Person</th><th class="num">Trees' lowest to highest guess (${u})</th><th class="num">Disagreement (SD of guesses, ${u})</th><th class="num">Forest prediction (${u})</th><th class="num">Observed (${u})</th><th class="num">Forest missed by (${u})</th></tr>
+      <p>When trees <b>disagree</b>, their guesses are spread out. That describes the trees. It is <b>not a confidence interval or prediction interval</b>: nothing says the real value lies between the lowest and highest guess, or how likely any value is.</p>
+      <details><summary>Compare all five example people</summary><div class="scroll"><table><tr><th>Person</th><th class="num">Trees' lowest to highest guess (${u})</th><th class="num">Disagreement (SD of guesses, ${u})</th><th class="num">Forest prediction (${u})</th><th class="num">Observed (${u})</th><th class="num">Forest missed by (${u})</th></tr>
       ${b.people.map((p) => { const t = rf.people[p.id].tree_predictions; return `<tr class="pick ${p.id === person.id ? "sel" : ""}" data-p="${p.id}" tabindex="0" role="button" aria-label="Show ${p.label}"><td>${p.label}<br><span class="note">${p.description}; ${p.why_chosen}</span></td>
         <td class="num">${fmt(Math.min(...t))} to ${fmt(Math.max(...t))}</td><td class="num">${fmt(sdev(t))}</td><td class="num">${fmt(rf.people[p.id].prediction)}</td><td class="num">${fmt(p.observed)}</td><td class="num">${fmt(Math.abs(rf.people[p.id].prediction - p.observed))}</td></tr>`; }).join("")}</table></div>
-      <p class="note">Click a row to look at that person. Compare the last two columns with the third: a wide spread doesn't tell you how big the miss will be.</p>
+      <p class="note">Click a row to look at that person. Compare the last two columns with the third: a wide spread doesn't tell you how big the miss will be.</p></details>
     </div>
 
     <h3>Common questions</h3>
@@ -486,7 +485,7 @@ function renderBoosting(b, person) {
   $("section").innerHTML = `
     <h2>One Correction at a Time</h2>
     ${goalBox("explain how boosting adds <b>one small correction per round</b>, and use <b>validation error</b> to choose when to stop.")}
-    <p class="terms"><b>Gradient boosting</b> builds a prediction in <b>rounds</b>. It starts with the training average, then each round adds one small decision tree that corrects part of what is still wrong.
+    <p class="terms"><b>Gradient boosting</b> builds a prediction in <b>rounds</b>. It starts with the training average, then each round adds one small decision tree, <b>fitted to the training residuals</b> (what the earlier rounds got wrong), to correct part of it.
       <b>Residual</b> = observed − predicted for a training person. <b>Validation people</b> = ${fmt(b.n_validation, 0)} people held out from fitting, used to decide when to stop. All numbers are in ${u}.</p>
     ${personLine(b, person)}
     <p class="who">Observed (measured) value for this person: <b>${fmt(person.observed)} ${u}</b>.</p>
@@ -503,12 +502,12 @@ function renderBoosting(b, person) {
       <div id="bo-path"></div>
     </div>
 
-    <div class="card">
-      <h3>What each tree is fitted to: the training residuals</h3>
+    <details class="card">
+      <summary>What is each tree fitted to? See the training residuals</summary>
       <p>Each new tree is trained to predict what the model so far still gets wrong on the <b>training</b> people: their residuals. The dots below are the residuals of ${rs.observed.length} training people (a sample) after round <span id='res-round'></span>; the next tree is fitted to these.
         As rounds go by, the dots crowd toward 0.</p>
       <div id="bo-resid"></div>
-    </div>
+    </details>
 
     <div class="card">
       <h3>When should it stop? Training error vs validation error</h3>
