@@ -19,3 +19,27 @@ A log of what I asked, in order, and what came of each request.
 
 6. **Final check and this log.** "phone layout doesnt matter. make sure everything else is fine. add the prompts.md as well"
    - Result: the agent tested all three sections on all three datasets in a real browser and found a rounding bug (lung-function forest average showed 1,982.6 instead of 1,982.5), fixed it, and added this file.
+
+7. **Check the build.** "is everything correct based off the assignment instructions? is it good to submit? also give me the link to submit"
+   - Result: the agent re-checked the repo and the live link and gave the repo link to submit.
+
+8. **Optional extensions.** "are the 2 optional extensions important to include?"
+   - Result: the agent said no (they don't affect eligibility or earn votes), so they were left out.
+
+9. **Reduce clutter.** "are you able to make this more user friendly and not so cluttered?"
+   - Result: secondary detail (trees 1-5 cards, five-person table, residual plot, feature-by-feature table) was moved into expandable sections. Everything the assignment requires stays visible.
+
+10. **Keep it on a branch first.** "save this in a new branch so i can see if i want to save it or not"
+    - Result: the changes were committed to a `declutter` branch and `main` was left alone.
+
+11. **Preview links.** "can you give me a link to the main branch app and a link to the decluttered"
+    - Result: the agent gave the Pages link for `main` and a raw.githack.com preview link for the branch, because Pages only serves `main`.
+
+12. **Decide whether to merge.** "i cant view the decluttered branch. do you think it is good to merge onto main? is it better than the main"
+    - Result: the agent saved side-by-side screenshots of both versions to the Desktop and recommended merging.
+
+13. **Merge and clean up.** "merge it", then "delete declutter if everything is onto main now"
+    - Result: `declutter` was fast-forward merged into `main`, the live site was re-tested (37 browser checks passed), and the branch was deleted.
+
+14. **Final check.** "make sure everything is how the assignment wants it", then "make sure prompts.md is updated and github is correct"
+    - Result: the agent re-checked the live app against every assignment checklist (27 checks passed) and updated this file.
